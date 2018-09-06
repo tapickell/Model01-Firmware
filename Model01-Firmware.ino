@@ -79,7 +79,9 @@
   */
 
 enum { MACRO_VERSION_INFO,
-       MACRO_ANY
+       MACRO_ANY,
+       MACRO_WRITE,
+       MACRO_COLON
      };
 
 
@@ -167,7 +169,7 @@ KEYMAPS(
 
    M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ___,
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
-                  Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
+   Key_H, Key_J, Key_K,     Key_L,         M(MACRO_COLON), Key_Quote,
    Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
    Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
    ShiftToLayer(FUNCTION)),
@@ -247,16 +249,16 @@ KEYMAPS(
    ___),
 
   [FUNCTION] =  KEYMAP_STACKED
-  (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           Key_CapsLock,
+  (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           ___,
    Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
-   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  Key_mouseWarpSE,
-   ___, Key_Delete, ___, ___,
+   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE),
+   ___, Key_Delete, ___, Key_CapsLock,
    ___,
 
-   Consumer_ScanPreviousTrack, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
+   Consumer_Mute, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F11,
-                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  ___,              Key_F12,
+                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,              Key_F12,
    Key_PcApplication,          Consumer_Mute,          Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
    ___, ___, Key_Enter, ___,
    ___)
@@ -287,6 +289,17 @@ static void pipeMacro(uint8_t keyState) {
 }
 */
 
+static void vimWriteMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":w"));
+  }
+}
+
+static void colonMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":"));
+  }
+}
 /** anyKeyMacro is used to provide the functionality of the 'Any' key.
  *
  * When the 'any key' macro is toggled on, a random alphanumeric key is
@@ -323,6 +336,14 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_ANY:
     anyKeyMacro(keyState);
+    break;
+
+  case MACRO_WRITE:
+    vimWriteMacro(keyState);
+    break;
+
+  case MACRO_COLON:
+    colonMacro(keyState);
     break;
   }
   return MACRO_NONE;
