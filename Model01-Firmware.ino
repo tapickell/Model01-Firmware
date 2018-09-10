@@ -81,6 +81,8 @@
 enum { MACRO_VERSION_INFO,
        MACRO_ANY,
        MACRO_WRITE,
+       MACRO_QUIT,
+       MACRO_WRITE_QUIT,
        MACRO_COLON
      };
 
@@ -172,7 +174,7 @@ KEYMAPS(
    Key_H, Key_J, Key_K,     Key_L,         M(MACRO_COLON), Key_Quote,
    Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
    Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-   ShiftToLayer(FUNCTION)),
+   Key_Spacebar),
 
 #elif defined (PRIMARY_KEYMAP_DVORAK)
 
@@ -250,9 +252,9 @@ KEYMAPS(
 
   [FUNCTION] =  KEYMAP_STACKED
   (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           ___,
-   Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
+   Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
-   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE),
+   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE_QUIT),
    ___, Key_Delete, ___, Key_CapsLock,
    ___,
 
@@ -292,6 +294,18 @@ static void pipeMacro(uint8_t keyState) {
 static void vimWriteMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
     Macros.type(PSTR(":w"));
+  }
+}
+
+static void vimQuitMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":q"));
+  }
+}
+
+static void vimWriteQuitMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":wq"));
   }
 }
 
@@ -340,6 +354,14 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_WRITE:
     vimWriteMacro(keyState);
+    break;
+
+  case MACRO_QUIT:
+    vimQuitMacro(keyState);
+    break;
+
+  case MACRO_WRITE_QUIT:
+    vimWriteQuitMacro(keyState);
     break;
 
   case MACRO_COLON:
