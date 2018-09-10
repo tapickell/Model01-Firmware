@@ -80,9 +80,12 @@
 
 enum { MACRO_VERSION_INFO,
        MACRO_ANY,
+       MACRO_REG,
        MACRO_WRITE,
        MACRO_QUIT,
        MACRO_WRITE_QUIT,
+       MACRO_VSPLIT,
+       MACRO_HSPLIT,
        MACRO_COLON
      };
 
@@ -167,12 +170,12 @@ KEYMAPS(
    Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
    Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-   ShiftToLayer(FUNCTION),
+   Key_Escape,
 
    M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ___,
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
    Key_H, Key_J, Key_K,     Key_L,         M(MACRO_COLON), Key_Quote,
-   Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
+   ShiftToLayer(FUNCTION),  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
    Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
    Key_Spacebar),
 
@@ -234,7 +237,6 @@ KEYMAPS(
 #endif
 
 
-
   [NUMPAD] =  KEYMAP_STACKED
   (___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___, ___,
@@ -252,16 +254,16 @@ KEYMAPS(
 
   [FUNCTION] =  KEYMAP_STACKED
   (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           ___,
-   Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
+   Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,     M(MACRO_REG), Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
    Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE_QUIT),
-   ___, Key_Delete, ___, Key_CapsLock,
-   ___,
+   ___, Key_Delete, ___, ___,
+   Key_CapsLock,
 
-   Consumer_Mute, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
+   Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F11,
-                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,              Key_F12,
-   Key_PcApplication,          Consumer_Mute,          Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
+                               Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,    Key_F12,
+   Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          M(MACRO_HSPLIT),    M(MACRO_VSPLIT),
    ___, ___, Key_Enter, ___,
    ___)
   ) // KEYMAPS(
@@ -290,6 +292,24 @@ static void pipeMacro(uint8_t keyState) {
   }
 }
 */
+
+static void vimRegMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":reg"));
+  }
+}
+
+static void vimVsplitMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":vsplit"));
+  }
+}
+
+static void vimHsplitMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR(":split"));
+  }
+}
 
 static void vimWriteMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
@@ -352,6 +372,10 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
     anyKeyMacro(keyState);
     break;
 
+  case MACRO_REG:
+    vimRegMacro(keyState);
+    break;
+
   case MACRO_WRITE:
     vimWriteMacro(keyState);
     break;
@@ -362,6 +386,14 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_WRITE_QUIT:
     vimWriteQuitMacro(keyState);
+    break;
+
+  case MACRO_VSPLIT:
+    vimVsplitMacro(keyState);
+    break;
+
+  case MACRO_HSPLIT:
+    vimHsplitMacro(keyState);
     break;
 
   case MACRO_COLON:
