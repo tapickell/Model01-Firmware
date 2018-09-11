@@ -257,13 +257,13 @@ KEYMAPS(
    Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,     M(MACRO_REG), Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
    Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE_QUIT),
-   ___, Key_Delete, ___, ___,
-   Key_CapsLock,
+   ___, Key_Delete, ___, Key_CapsLock,
+   ___,
 
    Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F11,
                                Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,    Key_F12,
-   Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          M(MACRO_HSPLIT),    M(MACRO_VSPLIT),
+   Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          M(MACRO_VSPLIT),    M(MACRO_HSPLIT),
    ___, ___, Key_Enter, ___,
    ___)
   ) // KEYMAPS(
@@ -292,6 +292,10 @@ static void pipeMacro(uint8_t keyState) {
   }
 }
 */
+
+static void enterKey() {
+  kaleidoscope::hid::pressKey(Key_Enter);
+}
 
 static void vimRegMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
@@ -374,26 +378,32 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
   case MACRO_REG:
     vimRegMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_WRITE:
     vimWriteMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_QUIT:
     vimQuitMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_WRITE_QUIT:
     vimWriteQuitMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_VSPLIT:
     vimVsplitMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_HSPLIT:
     vimHsplitMacro(keyState);
+    enterKey();
     break;
 
   case MACRO_COLON:
