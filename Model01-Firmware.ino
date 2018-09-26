@@ -239,8 +239,8 @@ KEYMAPS(
    ___,
 
    Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
-   ___,    ___, ___,     ___,    ___, ___, Key_F12,
-                               Key_mouseWarpW,         Key_mouseWarpS,           Key_mouseWarpN,           Key_mouseWarpE,  ___,    ___,
+   ___,    Key_mouseBtnL, Key_mouseBtnR,     ___,    ___, ___, Key_F12,
+                               Key_mouseWarpL,         Key_mouseWarpDn,           Key_mouseWarpUp,           Key_mouseWarpR,  ___,    ___,
    ___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___,
    ___)
