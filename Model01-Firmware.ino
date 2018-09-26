@@ -268,6 +268,12 @@ static void escapeKey(uint8_t keyState) {
   }
 }
 
+static void spaceKey(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    kaleidoscope::hid::pressKey(Key_Spacebar);
+  }
+}
+
 static void mixFormatMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
     Macros.type(PSTR("mix format"));
@@ -369,11 +375,11 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
     case MACRO_ANY:
       anyKeyMacro(keyState);
+      spaceKey(keyState);
       break;
 
     case MACRO_FORMAT:
       mixFormatMacro(keyState);
-      enterKey(keyState);
       break;
 
     case MACRO_REG:
@@ -383,6 +389,7 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
     case MACRO_EXEC_READ:
       vimExecReadMacro(keyState);
+      spaceKey(keyState);
       break;
 
     case MACRO_WRITE:
