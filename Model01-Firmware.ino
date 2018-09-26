@@ -133,7 +133,7 @@ KEYMAPS(
    Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
    Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-   Key_Escape,
+   ShiftToLayer(MOVEMENT),
 
    M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ___,
    Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
@@ -227,7 +227,22 @@ KEYMAPS(
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F11,
                                Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,    Key_F12,
    Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          Key_Backslash,    Key_Pipe,
-   ___, ___, Key_Enter, ___,
+   ___, ___, ___, ___,
+   ___),
+
+  [MOVEMENT] =  KEYMAP_STACKED
+  (___,      Key_F1,           Key_F2,      Key_F3,     Key_F4,        Key_F5,           ___,
+   ___, ___, ___, ___, ___, ___, ___,
+   Key_Home, ___, ___, ___, ___, ___,
+   Key_End, ___, ___, ___, ___, ___, ___,
+   ___, ___, ___, ___,
+   ___,
+
+   Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
+   ___,    ___, ___,     ___,    ___, ___, Key_F12,
+                               Key_mouseWarpW,         Key_mouseWarpS,           Key_mouseWarpN,           Key_mouseWarpE,  ___,    ___,
+   ___, ___, ___, ___, ___, ___, ___,
+   ___, ___, ___, ___,
    ___)
   ) // KEYMAPS(
 
