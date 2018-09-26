@@ -96,7 +96,7 @@ enum { MACRO_VERSION_INFO,
 
 */
 
-enum { PRIMARY, NUMPAD, FUNCTION }; // layers
+enum { PRIMARY, NUMPAD, FUNCTION, MOVEMENT }; // layers
 
 
 /**
