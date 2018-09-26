@@ -49,7 +49,9 @@ enum { MACRO_VERSION_INFO,
        MACRO_VSPLIT,
        MACRO_HSPLIT,
        MACRO_COLON,
-       MACRO_EX_MAP
+       MACRO_EX_MAP,
+       MACRO_EX_INSPECT,
+       MACRO_EX_INT
      };
 
 
@@ -216,7 +218,7 @@ KEYMAPS(
    ___),
 
   [FUNCTION] =  KEYMAP_STACKED
-  (___,      M(MACRO_EXEC_READ),           Key_F2,      Key_F3,     Key_F4,        M(MACRO_EX_MAP),           ___,
+  (___,      M(MACRO_EXEC_READ),           M(MACRO_EX_INSPECT),      M(MACRO_EX_INT),     Key_F4,        M(MACRO_EX_MAP),           ___,
    Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,     M(MACRO_REG), Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, M(MACRO_FORMAT), Key_mouseWarpNW,
    Key_End,  Key_PrintScreen,  Key_Insert,  ___,        M(MACRO_VSPLIT), M(MACRO_HSPLIT),  M(MACRO_WRITE_QUIT),
@@ -239,8 +241,8 @@ KEYMAPS(
    ___,
 
    Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
-   ___,    Key_mouseBtnL, Key_mouseBtnR,     ___,    ___, ___, Key_F12,
-                               Key_mouseWarpL,         Key_mouseWarpDn,           Key_mouseWarpUp,           Key_mouseWarpR,  ___,    ___,
+   ___,  ___,  Key_mouseBtnL, Key_mouseBtnR,     ___, ___, Key_F12,
+                               Key_mouseL,         Key_mouseDn,           Key_mouseUp,           Key_mouseR,  ___,    ___,
    ___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___,
    ___)
@@ -292,6 +294,12 @@ static void spaceKey(uint8_t keyState) {
 static void mixFormatMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
     Macros.type(PSTR("mix format"));
+  }
+}
+
+static void ioInspectMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR("IO.inspect(label:)"));
   }
 }
 
@@ -354,6 +362,13 @@ static void mapMacro(uint8_t keyState) {
     Macros.type(PSTR("%{}"));
   }
 }
+
+static void interpolateMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR("#{}"));
+  }
+}
+
 /** anyKeyMacro is used to provide the functionality of the 'Any' key.
 
    When the 'any key' macro is toggled on, a random alphanumeric key is
@@ -440,6 +455,19 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
       mapMacro(keyState);
       escapeKey(keyState);
       insertMacro(keyState);
+      break;
+
+    case MACRO_EX_INT:
+      interpolateMacro(keyState);
+      escapeKey(keyState);
+      insertMacro(keyState);
+      break;
+
+    case MACRO_EX_INSPECT:
+      ioInspectMacro(keyState);
+      escapeKey(keyState);
+      insertMacro(keyState);
+      spaceKey(keyState);
       break;
   }
   return MACRO_NONE;
