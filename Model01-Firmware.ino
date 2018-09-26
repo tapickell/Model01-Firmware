@@ -6,69 +6,24 @@
 #define BUILD_INFORMATION "locally built"
 #endif
 
-
-/**
-   These #include directives pull in the Kaleidoscope firmware core,
-   as well as the Kaleidoscope plugins we use in the Model 01's firmware
-*/
-
-
-// The Kaleidoscope core
 #include "Kaleidoscope.h"
-
 #include <Kaleidoscope-TopsyTurvy.h>
-#include <Kaleidoscope-Focus.h>
-
-// Support for keys that move the mouse
 #include "Kaleidoscope-MouseKeys.h"
-
-// Support for macros
 #include "Kaleidoscope-Macros.h"
-
-// Support for controlling the keyboard's LEDs
 #include "Kaleidoscope-LEDControl.h"
-
-// Support for "Numpad" mode, which is mostly just the Numpad specific LED mode
 #include "Kaleidoscope-NumPad.h"
-
-// Support for an "LED off mode"
 #include "LED-Off.h"
-
-// Support for the "Boot greeting" effect, which pulses the 'LED' button for 10s
-// when the keyboard is connected to a computer (or that computer is powered on)
 #include "Kaleidoscope-LEDEffect-BootGreeting.h"
-
-// Support for LED modes that set all LEDs to a single color
 #include "Kaleidoscope-LEDEffect-SolidColor.h"
-
-// Support for an LED mode that makes all the LEDs 'breathe'
 #include "Kaleidoscope-LEDEffect-Breathe.h"
-
-// Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
 #include "Kaleidoscope-LEDEffect-Chase.h"
-
-// Support for LED modes that pulse the keyboard's LED in a rainbow pattern
 #include "Kaleidoscope-LEDEffect-Rainbow.h"
-
-// Support for an LED mode that lights up the keys as you press them
 #include "Kaleidoscope-LED-Stalker.h"
-
-// Support for an LED mode that prints the keys you press in letters 4px high
 #include "Kaleidoscope-LED-AlphaSquare.h"
-
-// Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-Model01-TestMode.h"
-
-// Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
-
-// Support for magic combos (key chords that trigger an action)
 #include "Kaleidoscope-MagicCombo.h"
-
-// Support for USB quirks, like changing the key state report protocol
 #include "Kaleidoscope-USB-Quirks.h"
-
-
 
 /** This 'enum' is a list of all the macros used by the Model 01's firmware
     The names aren't particularly important. What is important is that each
@@ -93,7 +48,8 @@ enum { MACRO_VERSION_INFO,
        MACRO_WRITE_QUIT,
        MACRO_VSPLIT,
        MACRO_HSPLIT,
-       MACRO_COLON
+       MACRO_COLON,
+       MACRO_EX_MAP
      };
 
 
@@ -260,17 +216,17 @@ KEYMAPS(
    ___),
 
   [FUNCTION] =  KEYMAP_STACKED
-  (___,      M(MACRO_EXEC_READ),           Key_F2,      Key_F3,     Key_F4,        Key_F5,           ___,
+  (___,      M(MACRO_EXEC_READ),           Key_F2,      Key_F3,     Key_F4,        M(MACRO_EX_MAP),           ___,
    Key_Tab,  M(MACRO_QUIT),    M(MACRO_WRITE), ___,     M(MACRO_REG), Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, M(MACRO_FORMAT), Key_mouseWarpNW,
-   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  M(MACRO_WRITE_QUIT),
+   Key_End,  Key_PrintScreen,  Key_Insert,  ___,        M(MACRO_VSPLIT), M(MACRO_HSPLIT),  M(MACRO_WRITE_QUIT),
    ___, Key_Delete, ___, Key_CapsLock,
    ___,
 
    Key_Pipe,                   Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          LockLayer(NUMPAD),
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F11,
                                Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  Key_Semicolon,    Key_F12,
-   Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          M(MACRO_VSPLIT),    M(MACRO_HSPLIT),
+   Key_Backslash,              ___,                    Consumer_Mute,            Consumer_VolumeDecrement, Consumer_VolumeIncrement,          Key_Backslash,    Key_Pipe,
    ___, ___, Key_Enter, ___,
    ___)
   ) // KEYMAPS(
@@ -303,6 +259,12 @@ static void versionInfoMacro(uint8_t keyState) {
 static void enterKey(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
     kaleidoscope::hid::pressKey(Key_Enter);
+  }
+}
+
+static void escapeKey(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    kaleidoscope::hid::pressKey(Key_Escape);
   }
 }
 
@@ -357,6 +319,18 @@ static void vimWriteQuitMacro(uint8_t keyState) {
 static void colonMacro(uint8_t keyState) {
   if (keyToggledOn(keyState)) {
     Macros.type(PSTR(":"));
+  }
+}
+
+static void insertMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR("i"));
+  }
+}
+
+static void mapMacro(uint8_t keyState) {
+  if (keyToggledOn(keyState)) {
+    Macros.type(PSTR("%{}"));
   }
 }
 /** anyKeyMacro is used to provide the functionality of the 'Any' key.
@@ -438,6 +412,12 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
     case MACRO_COLON:
       colonMacro(keyState);
+      break;
+
+    case MACRO_EX_MAP:
+      mapMacro(keyState);
+      escapeKey(keyState);
+      insertMacro(keyState);
       break;
   }
   return MACRO_NONE;
@@ -579,7 +559,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // nevertheless. Such as toggling the key report protocol between Boot (used
   // by BIOSes) and Report (NKRO).
   USBQuirks,
-  Focus,
+//  Focus,
   TopsyTurvy
 );
 
@@ -613,7 +593,7 @@ void setup() {
   // with USB devices
   LEDOff.activate();
 
-  Focus.addHook(FOCUS_HOOK_HELP);
+  // Focus.addHook(FOCUS_HOOK_HELP);
   // Focus.addHook(FOCUS_HOOK_VERSION);
   // Focus.addHook(FOCUS_HOOK_LEDCONTROL);
 }
